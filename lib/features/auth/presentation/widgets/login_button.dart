@@ -1,3 +1,4 @@
+import 'package:dim0524_ecommerce/features/home/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 class LoginButton extends StatelessWidget {
@@ -21,7 +22,13 @@ class LoginButton extends StatelessWidget {
         ),
         onPressed: () => {
           if (formKey.currentState!.validate()) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("LOGADO?"))) // so pra fazer alguma coisa
+             Navigator.pop(context),
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (context) => const HomePage()
+              )
+            )
           }
         },
         child: const Text("Entrar",
