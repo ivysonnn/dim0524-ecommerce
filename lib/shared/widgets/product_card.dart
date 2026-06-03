@@ -22,12 +22,8 @@ class ProductCard extends StatelessWidget {
                 topRight: Radius.circular(16),
               ),
             ),
-            child: const Center(
-              child: Icon(
-                Icons.image_not_supported,
-                size: 48,
-                color: Color(0xFF333333),
-              ),
+            child: Center(
+              child: Image.network(product.imageURL),
             ),
           ),
           Padding(

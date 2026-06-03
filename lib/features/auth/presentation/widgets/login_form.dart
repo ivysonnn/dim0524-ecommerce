@@ -6,8 +6,10 @@ class LoginFormFields extends StatefulWidget {
   final Color darkColor;
   final Color bodyColor;
   final Color borderColor;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
 
-  const LoginFormFields({super.key, required this.primaryColor, required this.darkColor, required this.bodyColor, required this.borderColor});
+  const LoginFormFields({super.key, required this.primaryColor, required this.darkColor, required this.bodyColor, required this.borderColor, required this.emailController, required this.passwordController});
 
   @override
   State<LoginFormFields> createState() => _LoginFormFieldsState();
@@ -25,7 +27,8 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
         _inputField(
           Icons.mail_outline_rounded, 
           "Digite seu email", 
-          validator: FormValidator.email
+          validator: FormValidator.email,
+          controller: widget.emailController,
         ),
         const SizedBox(height:16,),
         _label("Senha"),
@@ -40,6 +43,7 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
             icon: Icon(_isPasswordVisible ? Icons.visibility_rounded : Icons.visibility_off_rounded)
           ),
           validator: FormValidator.password,
+          controller: widget.passwordController,
         )
       ],
     );
@@ -58,10 +62,11 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
     ), 
   );
 
-  Widget _inputField(IconData icon, String hint, {bool isPassword = false, Widget? suffix, String? Function(String?)? validator}) {
+  Widget _inputField(IconData icon, String hint, {bool isPassword = false, Widget? suffix, String? Function(String?)? validator, TextEditingController? controller}) {
     return TextFormField(
         obscureText: isPassword && !_isPasswordVisible,
         validator: validator,
+        controller: controller,
         style:
         TextStyle(
           color: widget.bodyColor,

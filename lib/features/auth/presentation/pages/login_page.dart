@@ -1,10 +1,12 @@
+import 'package:dim0524_ecommerce/features/auth/data/auth_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:dim0524_ecommerce/features/auth/presentation/widgets/login_header.dart';
 import 'package:dim0524_ecommerce/features/auth/presentation/widgets/login_form.dart';
 import 'package:dim0524_ecommerce/features/auth/presentation/widgets/login_button.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final AuthHandler authHandler;
+  const LoginPage({super.key, required this.authHandler});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -34,6 +36,9 @@ class _LoginPageState extends State<LoginPage> {
 // Branco puro para cards e superfícies
   //final Color _surfaceColor = const Color(0xFFFFFFFF);
 
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,11 +63,16 @@ class _LoginPageState extends State<LoginPage> {
                             darkColor: _darkTextColor, 
                             bodyColor: _bodyTextColor, 
                             borderColor: _borderColor, 
+                            emailController: _emailController, 
+                            passwordController: _passwordController, 
                             ),
                           const SizedBox(height: 20,),
                           LoginButton(
                             btnColor: _primaryColor,
-                            formKey: _formKey,  
+                            formKey: _formKey, 
+                            authHandler: widget.authHandler, 
+                            emailController: _emailController,
+                            passwordController: _passwordController,
                           ),
                         ],
                       ),

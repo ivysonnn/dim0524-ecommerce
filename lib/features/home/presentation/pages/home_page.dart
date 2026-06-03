@@ -1,22 +1,44 @@
-import 'package:dim0524_ecommerce/features/auth/presentation/pages/login_page.dart';
+import 'package:dim0524_ecommerce/features/auth/data/auth_handler.dart';
+import 'package:dim0524_ecommerce/shared/data/product_hadler.dart';
 import 'package:dim0524_ecommerce/shared/models/product.dart';
 import 'package:dim0524_ecommerce/shared/widgets/product_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final AuthHandler authHandler;
+  final ProductHandler productHandler;
+  const HomePage({super.key, required this.authHandler, required this.productHandler});
 
   @override
   State<HomePage> createState() => _HomePage();
 }
 
 class _HomePage extends State<HomePage> {
-  final List<Product> products = [
-    Product(title: "Notebook i7", price: 3500.00, description: "15 polegadas", imageURL: ""),
-    Product(title: "Mouse Gamer", price: 150.00, description: "RGB", imageURL: ""),
-    Product(title: "Teclado Mecânico", price: 300.00, description: "Switch Azul", imageURL: ""),
-    Product(title: "Monitor 24", price: 800.00, description: "Full HD", imageURL: ""),
-  ];
+  List<Product> products = [];
+  bool isLoading = true;
+  String? error;
+
+  @override 
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    try {
+      final result = await widget.productHandler.getProducts();
+      setState(() {
+        products = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+      });
+    } 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,24 +47,33 @@ class _HomePage extends State<HomePage> {
           title: const Text('Pagina inicial'),
           actions: [
             IconButton(
-              onPressed: () => {}, 
+              onPressed: () {}, 
               icon: const Icon(Icons.shopping_cart),
               tooltip: 'Carrinho',
             ),
             IconButton(
-              onPressed: () => {
-                Navigator.pop(context),
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage())
-                )  
+              onPressed: () {
+                widget.authHandler.logout();
+                Get.offAllNamed('/login');
               }, 
               icon: Icon(Icons.logout),
               tooltip: 'Sair da conta',
             )
           ],
         ),
-        body: ListView.builder(
+        body: _buildBody(),
+      );
+  }
+
+  Widget _buildBody() {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (error != null) {
+      return Center(child: Text("Erro: $error"));
+    }
+
+    return ListView.builder(
           itemCount: products.length,
           itemBuilder: (context, index) {
             return Padding(
@@ -57,7 +88,6 @@ class _HomePage extends State<HomePage> {
               ),
             );
           }
-        )
-      );
+        );
   }
 }
