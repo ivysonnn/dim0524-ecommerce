@@ -8,8 +8,9 @@ class LoginFormFields extends StatefulWidget {
   final Color borderColor;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final bool invalidCredentials;
 
-  const LoginFormFields({super.key, required this.primaryColor, required this.darkColor, required this.bodyColor, required this.borderColor, required this.emailController, required this.passwordController});
+  const LoginFormFields({super.key, required this.primaryColor, required this.darkColor, required this.bodyColor, required this.borderColor, required this.emailController, required this.passwordController, required this.invalidCredentials});
 
   @override
   State<LoginFormFields> createState() => _LoginFormFieldsState();
@@ -17,6 +18,7 @@ class LoginFormFields extends StatefulWidget {
 
 class _LoginFormFieldsState extends State<LoginFormFields> {
   bool _isPasswordVisible = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,13 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
         _inputField(
           Icons.mail_outline_rounded, 
           "Digite seu email", 
-          validator: FormValidator.email,
+          validator: (value) {
+            if (widget.invalidCredentials) {
+              return '';
+            }
+
+            return FormValidator.email(value);
+          },
           controller: widget.emailController,
         ),
         const SizedBox(height:16,),
@@ -42,7 +50,13 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
             })},
             icon: Icon(_isPasswordVisible ? Icons.visibility_rounded : Icons.visibility_off_rounded)
           ),
-          validator: FormValidator.password,
+          validator: (value) {
+            if (widget.invalidCredentials) {
+              return 'Email ou senha invalidos';
+            }
+
+            return FormValidator.password(value);
+          },
           controller: widget.passwordController,
         )
       ],
@@ -62,7 +76,13 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
     ), 
   );
 
-  Widget _inputField(IconData icon, String hint, {bool isPassword = false, Widget? suffix, String? Function(String?)? validator, TextEditingController? controller}) {
+  Widget _inputField(IconData icon, String hint, 
+  {
+    bool isPassword = false, 
+    Widget? suffix, 
+    String? Function(String?)? validator, 
+    TextEditingController? controller,
+  }) {
     return TextFormField(
         obscureText: isPassword && !_isPasswordVisible,
         validator: validator,

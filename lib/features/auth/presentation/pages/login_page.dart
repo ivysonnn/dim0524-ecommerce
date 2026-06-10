@@ -1,12 +1,10 @@
-import 'package:dim0524_ecommerce/features/auth/data/auth_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:dim0524_ecommerce/features/auth/presentation/widgets/login_header.dart';
 import 'package:dim0524_ecommerce/features/auth/presentation/widgets/login_form.dart';
 import 'package:dim0524_ecommerce/features/auth/presentation/widgets/login_button.dart';
 
 class LoginPage extends StatefulWidget {
-  final AuthHandler authHandler;
-  const LoginPage({super.key, required this.authHandler});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -14,6 +12,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+
+  bool _invalidCredentials = false;
 
   // Verde Menta Vibrante (Ideal para botões e destaques no escuro)
   // ── Paleta Modo Claro ──────────────────────
@@ -65,14 +65,17 @@ class _LoginPageState extends State<LoginPage> {
                             borderColor: _borderColor, 
                             emailController: _emailController, 
                             passwordController: _passwordController, 
+                            invalidCredentials: _invalidCredentials,
                             ),
                           const SizedBox(height: 20,),
                           LoginButton(
                             btnColor: _primaryColor,
                             formKey: _formKey, 
-                            authHandler: widget.authHandler, 
                             emailController: _emailController,
                             passwordController: _passwordController,
+                            onLoginFailed: () async {
+                              setState(() => _invalidCredentials = true);
+                            },
                           ),
                         ],
                       ),
@@ -86,4 +89,28 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_clearError);
+    _passwordController.addListener(_clearError);
+  }
+
+  void _clearError() {
+    print('_clearError chamado, invalidCredentials = $_invalidCredentials');
+    if (_invalidCredentials) {
+      setState(() => _invalidCredentials = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.removeListener(_clearError);
+    _passwordController.removeListener(_clearError);
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 }
+

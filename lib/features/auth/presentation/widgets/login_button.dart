@@ -1,14 +1,14 @@
-import 'package:dim0524_ecommerce/features/auth/data/auth_handler.dart';
+import 'package:dim0524_ecommerce/features/auth/data/user_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginButton extends StatelessWidget {
   final Color btnColor;
   final GlobalKey<FormState> formKey;
-  final AuthHandler authHandler;
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  const LoginButton({super.key, required this.btnColor, required this.formKey, required this.authHandler, required this.emailController, required this.passwordController});
+  final VoidCallback onLoginFailed;
+  const LoginButton({super.key, required this.btnColor, required this.formKey, required this.emailController, required this.passwordController, required this.onLoginFailed});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +26,12 @@ class LoginButton extends StatelessWidget {
         ),
         onPressed: ()  async {
           if (formKey.currentState!.validate()) {
-            await authHandler.saveCredentials(emailController.text, passwordController.text);
-            Get.offAllNamed('/home');
+            bool succesfullyLogged = await Get.find<UserHandler>().login(emailController.text, passwordController.text);
+            if(succesfullyLogged) {
+              Get.offAllNamed('/home');
+            } else {
+              onLoginFailed();
+            }
           }
         },
         child: const Text("Entrar",

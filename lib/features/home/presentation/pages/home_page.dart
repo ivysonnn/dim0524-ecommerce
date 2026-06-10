@@ -1,14 +1,13 @@
-import 'package:dim0524_ecommerce/features/auth/data/auth_handler.dart';
-import 'package:dim0524_ecommerce/shared/data/product_hadler.dart';
+import 'package:dim0524_ecommerce/shared/data/auth_preference.dart';
+import 'package:dim0524_ecommerce/features/cart/data/cart_controller.dart'; 
+import 'package:dim0524_ecommerce/shared/data/product_handler.dart';
 import 'package:dim0524_ecommerce/shared/models/product.dart';
-import 'package:dim0524_ecommerce/shared/widgets/product_card.dart';
+import 'package:dim0524_ecommerce/features/home/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
-  final AuthHandler authHandler;
-  final ProductHandler productHandler;
-  const HomePage({super.key, required this.authHandler, required this.productHandler});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePage();
@@ -27,7 +26,7 @@ class _HomePage extends State<HomePage> {
 
   Future<void> _loadProducts() async {
     try {
-      final result = await widget.productHandler.getProducts();
+      final result = await Get.find<ProductHandler>().getProducts();
       setState(() {
         products = result;
         isLoading = false;
@@ -46,14 +45,45 @@ class _HomePage extends State<HomePage> {
         appBar: AppBar(
           title: const Text('Pagina inicial'),
           actions: [
+            Obx(() {
+              final count = Get.find<CartController>().totalItems;
+              return Stack(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Get.toNamed('/cart');
+                    },
+                    icon: const Icon(Icons.shopping_cart),
+                    tooltip: 'Carrinho',
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            }),
             IconButton(
-              onPressed: () {}, 
-              icon: const Icon(Icons.shopping_cart),
-              tooltip: 'Carrinho',
-            ),
-            IconButton(
-              onPressed: () {
-                widget.authHandler.logout();
+              onPressed: () async{
+                Get.find<Preference>().logout();
+                Get.find<CartController>().clearCart();
+                await Get.find<Preference>().clearCart();
                 Get.offAllNamed('/login');
               }, 
               icon: Icon(Icons.logout),

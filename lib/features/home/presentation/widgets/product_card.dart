@@ -1,5 +1,7 @@
+import 'package:dim0524_ecommerce/features/cart/data/cart_controller.dart';
 import 'package:dim0524_ecommerce/shared/models/product.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -68,7 +70,7 @@ class ProductCard extends StatelessWidget {
                     // Botão
                     ElevatedButton(
                       onPressed: () {
-    
+                        Get.find<CartController>().addProduct(product);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0D9488), 
